@@ -276,6 +276,421 @@ INSERT INTO TaskSkill (task_id, skill_id, importance_level) VALUES
 (1, 1, 'High'),
 (2, 2, 'Medium');
 Based on your database schema, here are the Entity and DTO classes in Java (using Spring Boot and Lombok) for the following tables:
+// 1. Role
+public class RoleDTO { 
+    private int roleId; 
+    private String roleName; 
+    private String description; 
+}
+
+@Entity
+public class Role {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int roleId;
+    private String roleName;
+    private String description;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "role")
+    private List<User> users;
+}
+
+// 2. Permission
+public class PermissionDTO { 
+    private int permissionId; 
+    private String permissionName; 
+    private String description; 
+}
+
+@Entity
+public class Permission {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int permissionId;
+    private String permissionName;
+    private String description;
+    private LocalDateTime createdAt;
+
+    @ManyToMany(mappedBy = "permissions")
+    private List<Role> roles;
+}
+
+// 3. RolePermission
+public class RolePermissionDTO { 
+    private int roleId; 
+    private int permissionId; 
+    private int grantedBy; 
+}
+
+@Entity
+@IdClass(RolePermissionId.class)
+public class RolePermission {
+    @Id
+    private int roleId;
+    
+    @Id
+    private int permissionId;
+
+    private int grantedBy;
+    private LocalDateTime grantedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "roleId", insertable = false, updatable = false)
+    private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "permissionId", insertable = false, updatable = false)
+    private Permission permission;
+}
+
+// 4. User
+public class UserDTO { 
+    private int userId; 
+    private String name; 
+    private String email; 
+    private String phone; 
+    private String address; 
+    private String status; 
+    private int roleId; 
+    private int managerId; 
+}
+
+@Entity
+public class User {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userId;
+    private String name;
+    private String email;
+    private String password;
+    private String phone;
+    private String address;
+    private String profilePicture;
+    private String status;
+    private int roleId;
+    private int managerId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "roleId", insertable = false, updatable = false)
+    private Role role;
+
+    @ManyToOne
+    @JoinColumn(name = "managerId", insertable = false, updatable = false)
+    private User manager;
+
+    @OneToMany(mappedBy = "manager")
+    private List<User> managedUsers;
+}
+
+// 5. Skill
+public class SkillDTO { 
+    private int skillId; 
+    private String skillName; 
+    private String skillDescription; 
+    private String category; 
+    private String level; 
+}
+
+@Entity
+public class Skill {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int skillId;
+    private String skillName;
+    private String skillDescription;
+    private String category;
+    private String level;
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "skill")
+    private List<UserSkill> userSkills;
+    @OneToMany(mappedBy = "skill")
+    private List<TaskSkill> taskSkills;
+}
+
+// 6. Task
+public class TaskDTO { 
+    private int taskId; 
+    private String title; 
+    private String description; 
+    private String priority; 
+    private String status; 
+    private int requiredSkillId; 
+    private int assignedTo; 
+    private Date deadline; 
+    private Date startDate; 
+    private Date endDate; 
+}
+
+@Entity
+public class Task {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int taskId;
+    private String title;
+    private String description;
+    private String priority;
+    private String status;
+    private int estimatedHours;
+    private int actualHours;
+    private int requiredSkillId;
+    private int assignedTo;
+    private Date deadline;
+    private Date startDate;
+    private Date endDate;
+    private int createdBy;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "assignedTo", insertable = false, updatable = false)
+    private User assignedUser;
+
+    @ManyToOne
+    @JoinColumn(name = "requiredSkillId", insertable = false, updatable = false)
+    private Skill requiredSkill;
+}
+
+// 7. TaskUpdate
+public class TaskUpdateDTO { 
+    private int taskId; 
+    private String comment; 
+    private String status; 
+}
+
+@Entity
+public class TaskUpdate {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int updateId;
+    private int taskId;
+    private String comment;
+    private String status;
+    private int updatedBy;
+    private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "taskId", insertable = false, updatable = false)
+    private Task task;
+}
+
+// 8. Report
+public class ReportDTO { 
+    private int taskId; 
+    private String status; 
+    private int progressPercent; 
+    private String remarks; 
+}
+
+@Entity
+public class Report {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int reportId;
+    private int taskId;
+    private String status;
+    private int progressPercent;
+    private String remarks;
+    private Date reportDate;
+    private int createdBy;
+
+    @ManyToOne
+    @JoinColumn(name = "taskId", insertable = false, updatable = false)
+    private Task task;
+}
+
+// 9. Notification
+public class NotificationDTO { 
+    private int userId; 
+    private String message; 
+    private String type; 
+    private boolean isRead; 
+}
+
+@Entity
+public class Notification {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int notificationId;
+    private int userId;
+    private String message;
+    private String type;
+    private boolean isRead;
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private User user;
+}
+
+// 10. SkillHistory
+public class SkillHistoryDTO { 
+    private int userId; 
+    private int skillId; 
+    private Date acquiredOn; 
+    private String remarks; 
+}
+
+@Entity
+public class SkillHistory {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int historyId;
+    private int userId;
+    private int skillId;
+    private Date acquiredOn;
+    private String remarks;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "skillId", insertable = false, updatable = false)
+    private Skill skill;
+}
+
+// 11. TeamGroup
+public class TeamGroupDTO { 
+    private int teamId; 
+    private String teamName; 
+    private String projectName; 
+}
+
+@Entity
+public class TeamGroup {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int teamId;
+    private String teamName;
+    private String projectName;
+    private int createdBy;
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "teamGroup")
+    private List<TeamMember> teamMembers;
+}
+
+// 12. TeamMember
+public class TeamMemberDTO { 
+    private int userId; 
+    private int teamId; 
+    private int skillId; 
+    private int taskId; 
+    private String roleInTeam; 
+}
+
+@Entity
+@IdClass(TeamMemberId.class)
+public class TeamMember {
+    @Id 
+    private int userId;
+    
+    @Id 
+    private int teamId;
+    
+    private int skillId;
+    private int taskId;
+    private Date joinedOn;
+    private String roleInTeam;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "teamId", insertable = false, updatable = false)
+    private TeamGroup teamGroup;
+}
+
+// 13. TaskRequest
+public class TaskRequestDTO { 
+    private int userId; 
+    private int taskId; 
+    private String requestMessage; 
+    private String status; 
+}
+
+@Entity
+public class TaskRequest {
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int requestId;
+    private int userId;
+    private int taskId;
+    private String requestMessage;
+    private LocalDateTime requestDate;
+    private String status;
+    private int respondedBy;
+    private LocalDateTime respondedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "taskId", insertable = false, updatable = false)
+    private Task task;
+}
+
+// 14. UserSkill
+public class UserSkillDTO { 
+    private int userId; 
+    private int skillId; 
+    private String proficiencyLevel; 
+}
+
+@Entity
+@IdClass(UserSkillId.class)
+public class UserSkill {
+    @Id
+    private int userId;
+
+    @Id
+    private int skillId;
+
+    private String proficiencyLevel;
+    private Date lastUsed;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "skillId", insertable = false, updatable = false)
+    private Skill skill;
+}
+
+// 15. TaskSkill
+public class TaskSkillDTO { 
+    private int taskId; 
+    private int skillId; 
+    private String importanceLevel; 
+}
+
+@Entity
+@IdClass(TaskSkillId.class)
+public class TaskSkill {
+    @Id
+    private int taskId;
+
+    @Id
+    private int skillId;
+
+    private String importanceLevel;
+
+    @ManyToOne
+    @JoinColumn(name = "taskId", insertable = false, updatable = false)
+    private Task task;
+
+    @ManyToOne
+    @JoinColumn(name = "skillId", insertable = false, updatable = false)
+    private Skill skill;
+}
 
  
 
