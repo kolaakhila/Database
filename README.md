@@ -264,48 +264,6 @@ INSERT INTO TeamMember (user_id, team_id, skill_id, task_id, joined_on, role_in_
 -- Insert TaskRequest
 INSERT INTO TaskRequest (user_id, task_id, request_message, status, responded_by, responded_at) VALUES
 (3, 1, 'I would like to work on this API task', 'Approved', 2, '2025-05-09 09:00:00');
-// --- Entity and DTO Classes for Task, TaskUpdate, Report, Notification, SkillHistory, TeamGroup, TeamMember, TaskRequest, UserSkill, TaskSkill ---
-
-// Entity and DTO for Task @Entity public class Task { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer taskId; private String title; private String description; @Enumerated(EnumType.STRING) private Priority priority; @Enumerated(EnumType.STRING) private Status status; private Integer estimatedHours; private Integer actualHours; @ManyToOne private Skill requiredSkill; @ManyToOne private User assignedTo; @ManyToOne private User createdBy; private LocalDate deadline; private LocalDate startDate; private LocalDate endDate; private LocalDateTime createdAt; private LocalDateTime updatedAt; }
-
-@Data public class TaskDTO { private Integer taskId; private String title; private String description; private String priority; private String status; private Integer estimatedHours; private Integer actualHours; private Integer requiredSkillId; private Integer assignedToId; private Integer createdById; private LocalDate deadline; private LocalDate startDate; private LocalDate endDate; }
-
-// Entity and DTO for TaskUpdate @Entity public class TaskUpdate { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer updateId; @ManyToOne private Task task; private String comment; @Enumerated(EnumType.STRING) private TaskStatus status; @ManyToOne private User updatedBy; private LocalDateTime updatedAt; }
-
-@Data public class TaskUpdateDTO { private Integer updateId; private Integer taskId; private String comment; private String status; private Integer updatedById; }
-
-// Entity and DTO for Report @Entity public class Report { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer reportId; @ManyToOne private Task task; @Enumerated(EnumType.STRING) private ReportStatus status; private Integer progressPercent; private String remarks; private LocalDate reportDate; @ManyToOne private User createdBy; }
-
-@Data public class ReportDTO { private Integer reportId; private Integer taskId; private String status; private Integer progressPercent; private String remarks; private LocalDate reportDate; private Integer createdById; }
-
-// Entity and DTO for Notification @Entity public class Notification { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer notificationId; @ManyToOne private User user; private String message; @Enumerated(EnumType.STRING) private NotificationType type; private Boolean isRead; private LocalDateTime createdAt; }
-
-@Data public class NotificationDTO { private Integer notificationId; private Integer userId; private String message; private String type; private Boolean isRead; private LocalDateTime createdAt; }
-
-// Entity and DTO for SkillHistory @Entity public class SkillHistory { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer historyId; @ManyToOne private User user; @ManyToOne private Skill skill; private LocalDate acquiredOn; private String remarks; }
-
-@Data public class SkillHistoryDTO { private Integer historyId; private Integer userId; private Integer skillId; private LocalDate acquiredOn; private String remarks; }
-
-// Entity and DTO for TeamGroup @Entity public class TeamGroup { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer teamId; private String teamName; private String projectName; @ManyToOne private User createdBy; private LocalDateTime createdAt; }
-
-@Data public class TeamGroupDTO { private Integer teamId; private String teamName; private String projectName; private Integer createdById; private LocalDateTime createdAt; }
-
-// Entity and DTO for TeamMember @Entity @IdClass(TeamMemberId.class) public class TeamMember { @Id private Integer userId; @Id private Integer teamId; @ManyToOne private Skill skill; @ManyToOne private Task task; private LocalDate joinedOn; private String roleInTeam; }
-
-@Data public class TeamMemberDTO { private Integer userId; private Integer teamId; private Integer skillId; private Integer taskId; private LocalDate joinedOn; private String roleInTeam; }
-
-// Entity and DTO for TaskRequest @Entity public class TaskRequest { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer requestId; @ManyToOne private User user; @ManyToOne private Task task; private String requestMessage; private LocalDateTime requestDate; @Enumerated(EnumType.STRING) private RequestStatus status; @ManyToOne private User respondedBy; private LocalDateTime respondedAt; }
-
-@Data public class TaskRequestDTO { private Integer requestId; private Integer userId; private Integer taskId; private String requestMessage; private LocalDateTime requestDate; private String status; private Integer respondedById; private LocalDateTime respondedAt; }
-
-// Entity and DTO for UserSkill @Entity @IdClass(UserSkillId.class) public class UserSkill { @Id private Integer userId; @Id private Integer skillId; @Enumerated(EnumType.STRING) private ProficiencyLevel proficiencyLevel; private LocalDate lastUsed; }
-
-@Data public class UserSkillDTO { private Integer userId; private Integer skillId; private String proficiencyLevel; private LocalDate lastUsed; }
-
-// Entity and DTO for TaskSkill @Entity @IdClass(TaskSkillId.class) public class TaskSkill { @Id private Integer taskId; @Id private Integer skillId; @Enumerated(EnumType.STRING) private ImportanceLevel importanceLevel; }
-
-@Data public class TaskSkillDTO { private Integer taskId; private Integer skillId; private String importanceLevel; }
-
 
 
 -- Insert UserSkill
@@ -319,221 +277,25 @@ INSERT INTO TaskSkill (task_id, skill_id, importance_level) VALUES
 (2, 2, 'Medium');
 Based on your database schema, here are the Entity and DTO classes in Java (using Spring Boot and Lombok) for the following tables:
 
-User
+ 
 
-Role
-
-Permission
-
-RolePermission
-
-Skill
-
-
-> These are basic skeletons with appropriate annotations. You can further annotate them with validation rules (@NotNull, etc.) or DTO mapping logic (like using MapStruct or manually mapping in a service).
-
-
-
+    
 
 ---
 
-1. Role Entity and DTO
 
-@Entity
-@Table(name = "Role")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer roleId;
+    
 
-    @Column(unique = true, nullable = false)
-    private String roleName;
+ 
 
-    private String description;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-}
-
-@Data
-public class RoleDTO {
-    private Integer roleId;
-    private String roleName;
-    private String description;
-}
+    
+    
+    
 
 
----
+    
 
-2. Permission Entity and DTO
-
-@Entity
-@Table(name = "Permission")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Permission {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer permissionId;
-
-    @Column(unique = true, nullable = false)
-    private String permissionName;
-
-    private String description;
-
-    private LocalDateTime createdAt;
-}
-
-@Data
-public class PermissionDTO {
-    private Integer permissionId;
-    private String permissionName;
-    private String description;
-}
-
-
----
-
-3. RolePermission Entity and DTO
-
-@Entity
-@Table(name = "RolePermission")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@IdClass(RolePermissionId.class)
-public class RolePermission {
-    @Id
-    private Integer roleId;
-
-    @Id
-    private Integer permissionId;
-
-    private Integer grantedBy;
-    private LocalDateTime grantedAt;
-}
-
-@Data
-public class RolePermissionDTO {
-    private Integer roleId;
-    private Integer permissionId;
-    private Integer grantedBy;
-    private LocalDateTime grantedAt;
-}
-
-> RolePermissionId is the composite key class:
-
-
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class RolePermissionId implements Serializable {
-    private Integer roleId;
-    private Integer permissionId;
-}
-
-
----
-
-4. User Entity and DTO
-
-@Entity
-@Table(name = "User")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
-
-    private String name;
-
-    @Column(unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    private String phone;
-    private String address;
-    private String profilePicture;
-
-    @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.Active;
-
-    private Integer roleId;
-    private Integer managerId;
-
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-}
-
-public enum UserStatus {
-    Active, Inactive, Suspended
-}
-
-@Data
-public class UserDTO {
-    private Integer userId;
-    private String name;
-    private String email;
-    private String phone;
-    private String address;
-    private String profilePicture;
-    private String status;
-    private Integer roleId;
-    private Integer managerId;
-}
-
-
----
-
-5. Skill Entity and DTO
-
-@Entity
-@Table(name = "Skill")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Skill {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer skillId;
-
-    @Column(nullable = false)
-    private String skillName;
-
-    private String skillDescription;
-    private String category;
-
-    @Enumerated(EnumType.STRING)
-    private SkillLevel level = SkillLevel.Beginner;
-
-    private LocalDateTime createdAt;
-}
-
-public enum SkillLevel {
-    Beginner, Intermediate, Advanced
-}
-
-@Data
-public class SkillDTO {
-    private Integer skillId;
-    private String skillName;
-    private String skillDescription;
-    private String category;
-    private String level;
-}
-
-
----
-
-Would you like me to generate DTO <-> Entity mappers or service interfaces for any of these as well?
+    
+     
 
 
