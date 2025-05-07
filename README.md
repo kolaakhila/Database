@@ -264,6 +264,49 @@ INSERT INTO TeamMember (user_id, team_id, skill_id, task_id, joined_on, role_in_
 -- Insert TaskRequest
 INSERT INTO TaskRequest (user_id, task_id, request_message, status, responded_by, responded_at) VALUES
 (3, 1, 'I would like to work on this API task', 'Approved', 2, '2025-05-09 09:00:00');
+// --- Entity and DTO Classes for Task, TaskUpdate, Report, Notification, SkillHistory, TeamGroup, TeamMember, TaskRequest, UserSkill, TaskSkill ---
+
+// Entity and DTO for Task @Entity public class Task { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer taskId; private String title; private String description; @Enumerated(EnumType.STRING) private Priority priority; @Enumerated(EnumType.STRING) private Status status; private Integer estimatedHours; private Integer actualHours; @ManyToOne private Skill requiredSkill; @ManyToOne private User assignedTo; @ManyToOne private User createdBy; private LocalDate deadline; private LocalDate startDate; private LocalDate endDate; private LocalDateTime createdAt; private LocalDateTime updatedAt; }
+
+@Data public class TaskDTO { private Integer taskId; private String title; private String description; private String priority; private String status; private Integer estimatedHours; private Integer actualHours; private Integer requiredSkillId; private Integer assignedToId; private Integer createdById; private LocalDate deadline; private LocalDate startDate; private LocalDate endDate; }
+
+// Entity and DTO for TaskUpdate @Entity public class TaskUpdate { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer updateId; @ManyToOne private Task task; private String comment; @Enumerated(EnumType.STRING) private TaskStatus status; @ManyToOne private User updatedBy; private LocalDateTime updatedAt; }
+
+@Data public class TaskUpdateDTO { private Integer updateId; private Integer taskId; private String comment; private String status; private Integer updatedById; }
+
+// Entity and DTO for Report @Entity public class Report { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer reportId; @ManyToOne private Task task; @Enumerated(EnumType.STRING) private ReportStatus status; private Integer progressPercent; private String remarks; private LocalDate reportDate; @ManyToOne private User createdBy; }
+
+@Data public class ReportDTO { private Integer reportId; private Integer taskId; private String status; private Integer progressPercent; private String remarks; private LocalDate reportDate; private Integer createdById; }
+
+// Entity and DTO for Notification @Entity public class Notification { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer notificationId; @ManyToOne private User user; private String message; @Enumerated(EnumType.STRING) private NotificationType type; private Boolean isRead; private LocalDateTime createdAt; }
+
+@Data public class NotificationDTO { private Integer notificationId; private Integer userId; private String message; private String type; private Boolean isRead; private LocalDateTime createdAt; }
+
+// Entity and DTO for SkillHistory @Entity public class SkillHistory { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer historyId; @ManyToOne private User user; @ManyToOne private Skill skill; private LocalDate acquiredOn; private String remarks; }
+
+@Data public class SkillHistoryDTO { private Integer historyId; private Integer userId; private Integer skillId; private LocalDate acquiredOn; private String remarks; }
+
+// Entity and DTO for TeamGroup @Entity public class TeamGroup { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer teamId; private String teamName; private String projectName; @ManyToOne private User createdBy; private LocalDateTime createdAt; }
+
+@Data public class TeamGroupDTO { private Integer teamId; private String teamName; private String projectName; private Integer createdById; private LocalDateTime createdAt; }
+
+// Entity and DTO for TeamMember @Entity @IdClass(TeamMemberId.class) public class TeamMember { @Id private Integer userId; @Id private Integer teamId; @ManyToOne private Skill skill; @ManyToOne private Task task; private LocalDate joinedOn; private String roleInTeam; }
+
+@Data public class TeamMemberDTO { private Integer userId; private Integer teamId; private Integer skillId; private Integer taskId; private LocalDate joinedOn; private String roleInTeam; }
+
+// Entity and DTO for TaskRequest @Entity public class TaskRequest { @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Integer requestId; @ManyToOne private User user; @ManyToOne private Task task; private String requestMessage; private LocalDateTime requestDate; @Enumerated(EnumType.STRING) private RequestStatus status; @ManyToOne private User respondedBy; private LocalDateTime respondedAt; }
+
+@Data public class TaskRequestDTO { private Integer requestId; private Integer userId; private Integer taskId; private String requestMessage; private LocalDateTime requestDate; private String status; private Integer respondedById; private LocalDateTime respondedAt; }
+
+// Entity and DTO for UserSkill @Entity @IdClass(UserSkillId.class) public class UserSkill { @Id private Integer userId; @Id private Integer skillId; @Enumerated(EnumType.STRING) private ProficiencyLevel proficiencyLevel; private LocalDate lastUsed; }
+
+@Data public class UserSkillDTO { private Integer userId; private Integer skillId; private String proficiencyLevel; private LocalDate lastUsed; }
+
+// Entity and DTO for TaskSkill @Entity @IdClass(TaskSkillId.class) public class TaskSkill { @Id private Integer taskId; @Id private Integer skillId; @Enumerated(EnumType.STRING) private ImportanceLevel importanceLevel; }
+
+@Data public class TaskSkillDTO { private Integer taskId; private Integer skillId; private String importanceLevel; }
+
+
 
 -- Insert UserSkill
 INSERT INTO UserSkill (user_id, skill_id, proficiency_level, last_used) VALUES
