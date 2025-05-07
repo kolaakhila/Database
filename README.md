@@ -317,3 +317,223 @@ INSERT INTO UserSkill (user_id, skill_id, proficiency_level, last_used) VALUES
 INSERT INTO TaskSkill (task_id, skill_id, importance_level) VALUES
 (1, 1, 'High'),
 (2, 2, 'Medium');
+Based on your database schema, here are the Entity and DTO classes in Java (using Spring Boot and Lombok) for the following tables:
+
+User
+
+Role
+
+Permission
+
+RolePermission
+
+Skill
+
+
+> These are basic skeletons with appropriate annotations. You can further annotate them with validation rules (@NotNull, etc.) or DTO mapping logic (like using MapStruct or manually mapping in a service).
+
+
+
+
+---
+
+1. Role Entity and DTO
+
+@Entity
+@Table(name = "Role")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer roleId;
+
+    @Column(unique = true, nullable = false)
+    private String roleName;
+
+    private String description;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+@Data
+public class RoleDTO {
+    private Integer roleId;
+    private String roleName;
+    private String description;
+}
+
+
+---
+
+2. Permission Entity and DTO
+
+@Entity
+@Table(name = "Permission")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Permission {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer permissionId;
+
+    @Column(unique = true, nullable = false)
+    private String permissionName;
+
+    private String description;
+
+    private LocalDateTime createdAt;
+}
+
+@Data
+public class PermissionDTO {
+    private Integer permissionId;
+    private String permissionName;
+    private String description;
+}
+
+
+---
+
+3. RolePermission Entity and DTO
+
+@Entity
+@Table(name = "RolePermission")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@IdClass(RolePermissionId.class)
+public class RolePermission {
+    @Id
+    private Integer roleId;
+
+    @Id
+    private Integer permissionId;
+
+    private Integer grantedBy;
+    private LocalDateTime grantedAt;
+}
+
+@Data
+public class RolePermissionDTO {
+    private Integer roleId;
+    private Integer permissionId;
+    private Integer grantedBy;
+    private LocalDateTime grantedAt;
+}
+
+> RolePermissionId is the composite key class:
+
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RolePermissionId implements Serializable {
+    private Integer roleId;
+    private Integer permissionId;
+}
+
+
+---
+
+4. User Entity and DTO
+
+@Entity
+@Table(name = "User")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userId;
+
+    private String name;
+
+    @Column(unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    private String phone;
+    private String address;
+    private String profilePicture;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status = UserStatus.Active;
+
+    private Integer roleId;
+    private Integer managerId;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+public enum UserStatus {
+    Active, Inactive, Suspended
+}
+
+@Data
+public class UserDTO {
+    private Integer userId;
+    private String name;
+    private String email;
+    private String phone;
+    private String address;
+    private String profilePicture;
+    private String status;
+    private Integer roleId;
+    private Integer managerId;
+}
+
+
+---
+
+5. Skill Entity and DTO
+
+@Entity
+@Table(name = "Skill")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Skill {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer skillId;
+
+    @Column(nullable = false)
+    private String skillName;
+
+    private String skillDescription;
+    private String category;
+
+    @Enumerated(EnumType.STRING)
+    private SkillLevel level = SkillLevel.Beginner;
+
+    private LocalDateTime createdAt;
+}
+
+public enum SkillLevel {
+    Beginner, Intermediate, Advanced
+}
+
+@Data
+public class SkillDTO {
+    private Integer skillId;
+    private String skillName;
+    private String skillDescription;
+    private String category;
+    private String level;
+}
+
+
+---
+
+Would you like me to generate DTO <-> Entity mappers or service interfaces for any of these as well?
+
+
